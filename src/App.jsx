@@ -538,12 +538,12 @@ function AssemblingBanner() {
       window.removeEventListener("resize", handleResize);
       window.cancelAnimationFrame(frameId);
 
-        fragments.forEach((fragment) => {
-          fragment.mesh.geometry?.dispose?.();
-          fragment.mat.dispose?.();
-          fragment.wireGeo?.dispose?.();
-          fragment.wireMat?.dispose?.();
-        });
+      fragments.forEach((fragment) => {
+        fragment.mesh.geometry?.dispose?.();
+        fragment.mat.dispose?.();
+        fragment.wireGeo?.dispose?.();
+        fragment.wireMat?.dispose?.();
+      });
 
       renderer.dispose();
       if (mount.contains(renderer.domElement)) {
@@ -683,7 +683,7 @@ function ContactSection() {
           <SectionHeader
             eyebrow="Contact"
             title="Reach out."
-            body="Governed software. End-to-end delivery. If that is what you need, we should talk."
+            body="Governed software. End-to-end delivery."
           />
           <div className="contact-notes">
             {CONTACT_NOTES.map((note) => (
@@ -747,7 +747,6 @@ function Footer() {
   return (
     <footer className="shell footer">
       <span>(c) {new Date().getFullYear()} Sovereign Nexus LLC</span>
-      <span>A Nove Mani company</span>
     </footer>
   );
 }
