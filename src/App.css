@@ -1,5 +1,3 @@
-@import url("https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700;800&family=Fira+Code:wght@400;500;600&display=swap");
-
 :root {
   --bg: #08080a;
   --bg-elevated: #0f0f12;
@@ -14,9 +12,9 @@
   --border: rgba(212, 168, 67, 0.12);
   --border-strong: rgba(212, 168, 67, 0.24);
   --shell: min(1120px, calc(100vw - 32px));
-  --radius-lg: 28px;
-  --radius-md: 18px;
-  --radius-sm: 10px;
+  --radius-lg: 14px;
+  --radius-md: 8px;
+  --radius-sm: 8px;
   --shadow-soft: 0 20px 60px rgba(0, 0, 0, 0.35);
   --shadow-gold: 0 14px 40px rgba(212, 168, 67, 0.22);
   --sans: "Lexend", sans-serif;
@@ -36,8 +34,10 @@ html {
 body {
   margin: 0;
   background:
-    radial-gradient(circle at top, rgba(212, 168, 67, 0.12), transparent 34%),
+    linear-gradient(135deg, rgba(212, 168, 67, 0.1) 0 1px, transparent 1px 34px),
+    linear-gradient(215deg, rgba(156, 163, 175, 0.08) 0 1px, transparent 1px 42px),
     linear-gradient(180deg, #08080a 0%, #09090d 48%, #070708 100%);
+  background-attachment: fixed;
   color: var(--text);
   font-family: var(--sans);
 }
@@ -72,26 +72,24 @@ button {
 .page-shell::after {
   content: "";
   position: fixed;
-  inset: auto;
   z-index: -1;
   pointer-events: none;
-  filter: blur(30px);
 }
 
 .page-shell::before {
-  top: 8rem;
-  right: -6rem;
-  width: 22rem;
-  height: 22rem;
-  background: radial-gradient(circle, rgba(212, 168, 67, 0.16), transparent 68%);
+  inset: 0;
+  background:
+    linear-gradient(90deg, transparent 0 49%, rgba(212, 168, 67, 0.08) 49.8% 50.2%, transparent 51%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.045), transparent 24rem);
+  mask-image: linear-gradient(180deg, #000, transparent 80%);
 }
 
 .page-shell::after {
-  bottom: 12rem;
-  left: -8rem;
-  width: 26rem;
-  height: 26rem;
-  background: radial-gradient(circle, rgba(120, 147, 173, 0.12), transparent 70%);
+  top: 0;
+  right: 8vw;
+  width: 1px;
+  height: 100%;
+  background: linear-gradient(180deg, transparent, rgba(156, 163, 175, 0.24), transparent);
 }
 
 .shell {
@@ -184,7 +182,7 @@ button {
 .site-nav__brand {
   gap: 0.75rem;
   font-weight: 700;
-  letter-spacing: 0.01em;
+  letter-spacing: 0;
 }
 
 .site-nav__actions {
@@ -216,15 +214,15 @@ button {
   color: var(--gold);
   font-family: var(--mono);
   font-size: 0.72rem;
-  letter-spacing: 0.34em;
+  letter-spacing: 0;
   text-transform: uppercase;
 }
 
 .hero__content {
   display: grid;
-  grid-template-columns: minmax(0, 1.2fr) minmax(280px, 0.8fr);
-  gap: 2rem;
-  align-items: end;
+  grid-template-columns: minmax(0, 1.08fr) minmax(320px, 0.92fr);
+  gap: clamp(2rem, 5vw, 4rem);
+  align-items: center;
   opacity: 0;
   transform: translateY(24px);
   transition:
@@ -239,9 +237,9 @@ button {
 
 .hero h1 {
   margin: 0;
-  font-size: clamp(2.7rem, 6vw, 5rem);
+  font-size: 4.9rem;
   line-height: 0.98;
-  letter-spacing: -0.04em;
+  letter-spacing: 0;
   text-wrap: balance;
 }
 
@@ -288,6 +286,12 @@ button {
     color 0.2s ease;
 }
 
+.button:disabled {
+  cursor: wait;
+  opacity: 0.66;
+  transform: none;
+}
+
 .button:hover,
 .button:focus-visible {
   transform: translateY(-1px);
@@ -330,19 +334,77 @@ button {
   font-size: 0.88rem;
 }
 
-.hero__stack {
+.hero__stage {
   display: grid;
   gap: 1rem;
+  margin-top: 100px;
+}
+
+.hero__stage-frame {
+  position: relative;
+  height: 460px;
+  overflow: hidden;
+  border: 1px solid rgba(212, 168, 67, 0.22);
+  border-radius: var(--radius-lg);
+  background: rgba(8, 8, 10, 0.92);
+  box-shadow:
+    0 24px 80px rgba(0, 0, 0, 0.45),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.03);
+}
+
+.hero__stage-frame::before,
+.hero__stage-frame::after {
+  content: "";
+  position: absolute;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.hero__stage-frame::before {
+  inset: 1rem;
+  border: 1px solid rgba(212, 168, 67, 0.12);
+  border-radius: calc(var(--radius-lg) - 4px);
+}
+
+.hero__stage-frame::after {
+  inset: 0;
+  background:
+    linear-gradient(180deg, rgba(8, 8, 10, 0.08), rgba(8, 8, 10, 0.18)),
+    radial-gradient(circle at 50% 28%, rgba(212, 168, 67, 0.08), transparent 58%);
+}
+
+.hero__video {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.hero__signal-row {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.8rem;
 }
 
 .hero__signal {
-  padding: 1.2rem 1.25rem;
+  min-height: 112px;
+  padding: 1.05rem;
   border: 1px solid var(--border);
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-sm);
   background:
     radial-gradient(circle at top right, rgba(212, 168, 67, 0.14), transparent 54%),
     rgba(15, 15, 18, 0.82);
   backdrop-filter: blur(12px);
+  transition:
+    transform 0.2s ease,
+    border-color 0.2s ease,
+    background 0.2s ease;
+}
+
+.hero__signal:hover {
+  transform: translateY(-2px);
+  border-color: var(--border-strong);
+  background: rgba(20, 20, 25, 0.9);
 }
 
 .hero__signal span {
@@ -351,7 +413,7 @@ button {
   color: var(--gold);
   font-family: var(--mono);
   font-size: 0.72rem;
-  letter-spacing: 0.18em;
+  letter-spacing: 0;
   text-transform: uppercase;
 }
 
@@ -401,9 +463,9 @@ button {
   top: 40%;
   left: 50%;
   transform: translate(-50%, -50%);
-  font-size: clamp(1.65rem, 4vw, 2.4rem);
+  font-size: 2.3rem;
   font-weight: 800;
-  letter-spacing: 0.3em;
+  letter-spacing: 0;
   line-height: 1;
   color: var(--gold);
   text-transform: uppercase;
@@ -420,7 +482,7 @@ button {
   font-family: var(--sans);
   font-size: 0.76rem;
   font-weight: 600;
-  letter-spacing: 0.08em;
+  letter-spacing: 0;
   line-height: 1;
   -webkit-text-stroke: 0.4px rgba(255, 255, 255, 0.9);
   text-shadow:
@@ -445,15 +507,15 @@ button {
   color: var(--gold);
   font-family: var(--mono);
   font-size: 0.72rem;
-  letter-spacing: 0.3em;
+  letter-spacing: 0;
   text-transform: uppercase;
 }
 
 .section-header h2 {
   margin: 0;
-  font-size: clamp(2rem, 4vw, 2.75rem);
+  font-size: 2.65rem;
   line-height: 1.05;
-  letter-spacing: -0.03em;
+  letter-spacing: 0;
   text-wrap: balance;
 }
 
@@ -527,7 +589,7 @@ button {
   margin-bottom: 1.3rem;
   font-family: var(--mono);
   font-size: 0.72rem;
-  letter-spacing: 0.28em;
+  letter-spacing: 0;
   text-transform: uppercase;
 }
 
@@ -570,7 +632,7 @@ button {
   color: rgba(212, 168, 67, 0.4);
   font-family: var(--mono);
   font-size: 0.7rem;
-  letter-spacing: 0.2em;
+  letter-spacing: 0;
   text-align: right;
   padding-top: 0.25rem;
 }
@@ -624,6 +686,14 @@ button {
 .field {
   display: grid;
   gap: 0.45rem;
+}
+
+.field--honeypot {
+  position: absolute;
+  left: -10000px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
 }
 
 .field--full {
@@ -681,6 +751,14 @@ button {
   line-height: 1.6;
 }
 
+.form-status--success {
+  color: #b9f6ca;
+}
+
+.form-status--error {
+  color: #ffb4ab;
+}
+
 .footer {
   display: flex;
   justify-content: space-between;
@@ -693,7 +771,7 @@ button {
 
 .footer span:last-child {
   font-family: var(--mono);
-  letter-spacing: 0.15em;
+  letter-spacing: 0;
   text-transform: uppercase;
 }
 
@@ -710,8 +788,17 @@ button {
     grid-template-columns: 1fr;
   }
 
-  .hero__stack {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+  .hero__stage {
+    max-width: 640px;
+    margin-top: 0;
+  }
+
+  .hero__stage-frame {
+    height: clamp(300px, 56vw, 380px);
+  }
+
+  .hero h1 {
+    font-size: 4.15rem;
   }
 
   .contact-copy {
@@ -722,6 +809,10 @@ button {
 @media (max-width: 720px) {
   .section {
     padding: 4.5rem 0;
+  }
+
+  .section-header h2 {
+    font-size: 2.15rem;
   }
 
   .site-nav {
@@ -757,14 +848,18 @@ button {
     padding-bottom: 2.5rem;
   }
 
+  .hero h1 {
+    font-size: 3.2rem;
+  }
+
   .hero__eyebrow,
   .section-header__eyebrow {
-    letter-spacing: 0.22em;
+    letter-spacing: 0;
   }
 
   .assembly-banner__subtitle {
     font-size: 0.66rem;
-    letter-spacing: 0.06em;
+    letter-spacing: 0;
     top: calc(50% + 5.6rem);
     max-width: calc(100% - 1.25rem);
   }
@@ -775,12 +870,16 @@ button {
     align-items: stretch;
   }
 
+  .hero__stage-frame {
+    height: clamp(240px, 54vw, 320px);
+  }
+
   .button,
   .button--compact {
     width: 100%;
   }
 
-  .hero__stack,
+  .hero__signal-row,
   .feature-grid,
   .duality-grid,
   .contact-card__grid {
@@ -801,7 +900,7 @@ button {
   }
 
   .assembly-banner__title {
-    letter-spacing: 0.18em;
+    letter-spacing: 0;
   }
 
   .footer {
@@ -814,6 +913,14 @@ button {
 @media (max-width: 560px) {
   :root {
     --shell: min(1120px, calc(100vw - 22px));
+  }
+
+  .hero h1 {
+    font-size: 2.75rem;
+  }
+
+  .hero__stage-frame {
+    height: clamp(200px, 58vw, 260px);
   }
 
   .hero__signal strong {

@@ -1,5 +1,4 @@
 import { useEffect, useRef, useState } from "react";
-import * as THREE from "three";
 import "./App.css";
 
 const GOLD = "#D4A843";
@@ -68,6 +67,27 @@ const SIGNALS = [
     title: "Production ownership",
     body: "The same team shaping the interface is accountable for delivery quality and runtime behavior.",
   },
+];
+
+const FITS = [
+  {
+    title: "Audit-ready applications",
+    body: "Custom software for workflows where approvals, role boundaries, and change history need to be visible from the beginning.",
+  },
+  {
+    title: "Governed SaaS platforms",
+    body: "Multi-tenant products with traceable releases, durable state models, and operational controls designed into the platform.",
+  },
+  {
+    title: "Secure integrations",
+    body: "APIs, portals, and data flows connected under clear ownership so sensitive operations stay accountable.",
+  },
+];
+
+const HERO_SIGNALS = [
+  { label: "Audit trail", value: "Every action traced" },
+  { label: "Integrity", value: "State guarded" },
+  { label: "Delivery", value: "Owned end to end" },
 ];
 
 const CONTACT_NOTES = [
@@ -161,7 +181,7 @@ function Nav() {
   }, []);
 
   return (
-    <nav className={`site-nav ${scrolled ? "is-scrolled" : ""}`}>
+    <nav className={`site-nav ${scrolled ? "is-scrolled" : ""}`} aria-label="Primary navigation">
       <div className="site-nav__brand">
         <svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true">
           <circle cx="9" cy="9" r="2.5" fill={GOLD} />
@@ -221,18 +241,25 @@ function Hero() {
             </a>
           </div>
         </div>
-        <div className="hero__stack">
-          <div className="hero__signal">
-            <span>Auditability</span>
-            <strong>Designed in</strong>
+        <div className="hero__stage" aria-label="Animated governance system preview">
+          <div className="hero__stage-frame">
+            <video
+              className="hero__video"
+              src="/SN_Hero_compressed.mp4"
+              autoPlay
+              muted
+              loop
+              playsInline
+              preload="metadata"
+            />
           </div>
-          <div className="hero__signal">
-            <span>State integrity</span>
-            <strong>Enforced by default</strong>
-          </div>
-          <div className="hero__signal">
-            <span>Deployments</span>
-            <strong>Traceable end to end</strong>
+          <div className="hero__signal-row">
+            {HERO_SIGNALS.map((signal) => (
+              <div key={signal.label} className="hero__signal">
+                <span>{signal.label}</span>
+                <strong>{signal.value}</strong>
+              </div>
+            ))}
           </div>
         </div>
       </div>
@@ -266,6 +293,16 @@ function AssemblingBanner() {
     if (!mount || !container || !overlay || !title || !subtitle) {
       return undefined;
     }
+
+    let disposed = false;
+    let cleanupScene = () => {};
+
+    const setupScene = async () => {
+      const THREE = await import("three");
+
+      if (disposed) {
+        return;
+      }
 
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(55, mount.clientWidth / bannerHeight, 0.1, 100);
@@ -532,7 +569,7 @@ function AssemblingBanner() {
 
     animate();
 
-    return () => {
+      cleanupScene = () => {
       mount.removeEventListener("pointermove", handlePointerMove);
       window.removeEventListener("scroll", handleScroll);
       window.removeEventListener("resize", handleResize);
@@ -549,6 +586,14 @@ function AssemblingBanner() {
       if (mount.contains(renderer.domElement)) {
         mount.removeChild(renderer.domElement);
       }
+    };
+    };
+
+    setupScene();
+
+    return () => {
+      disposed = true;
+      cleanupScene();
     };
   }, [bannerHeight]);
 
@@ -668,12 +713,70 @@ function Signals() {
   );
 }
 
+function FitSection() {
+  return (
+    <section className="shell section section--bordered">
+      <FadeIn>
+        <SectionHeader
+          eyebrow="Best Fit"
+          title="Custom software for teams that cannot treat control as an afterthought."
+          body="Sovereign Nexus is built for organizations that need the product experience and the operating model to reinforce each other."
+        />
+      </FadeIn>
+      <div className="signals-grid">
+        {FITS.map((fit, index) => (
+          <FadeIn key={fit.title} delay={index * 0.1}>
+            <article className="surface-card signal-card">
+              <h3>{fit.title}</h3>
+              <p>{fit.body}</p>
+            </article>
+          </FadeIn>
+        ))}
+      </div>
+    </section>
+  );
+}
+
 function ContactSection() {
-  const [form, setForm] = useState({ name: "", email: "", message: "" });
+  const [form, setForm] = useState({ name: "", email: "", message: "", company: "" });
   const [focusedField, setFocusedField] = useState("");
+  const [status, setStatus] = useState({ type: "idle", message: "" });
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const updateField = (field) => (event) => {
     setForm((current) => ({ ...current, [field]: event.target.value }));
+    setStatus({ type: "idle", message: "" });
+  };
+
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    setIsSubmitting(true);
+    setStatus({ type: "idle", message: "" });
+
+    try {
+      const response = await fetch("/api/contact", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(form),
+      });
+
+      if (!response.ok) {
+        const data = await response.json().catch(() => ({}));
+        throw new Error(data.error || "Message could not be sent.");
+      }
+
+      setForm({ name: "", email: "", message: "", company: "" });
+      setStatus({ type: "success", message: "Message sent. Jake will get this in his inbox." });
+    } catch (error) {
+      setStatus({
+        type: "error",
+        message: error.message || "Something went wrong. Please try again.",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -694,11 +797,19 @@ function ContactSection() {
           </div>
         </div>
 
-        <div className="surface-card contact-card">
+        <form className="surface-card contact-card" onSubmit={handleSubmit}>
+          <label className="field field--honeypot" aria-hidden="true">
+            <span>Company</span>
+            <input name="company" tabIndex="-1" value={form.company} onChange={updateField("company")} />
+          </label>
           <div className="contact-card__grid">
             <label className="field">
               <span>Name</span>
               <input
+                name="name"
+                required
+                autoComplete="name"
+                maxLength={80}
                 value={form.name}
                 onChange={updateField("name")}
                 onFocus={() => setFocusedField("name")}
@@ -710,6 +821,12 @@ function ContactSection() {
             <label className="field">
               <span>Email</span>
               <input
+                name="email"
+                type="email"
+                required
+                autoComplete="email"
+                inputMode="email"
+                maxLength={254}
                 value={form.email}
                 onChange={updateField("email")}
                 onFocus={() => setFocusedField("email")}
@@ -721,7 +838,11 @@ function ContactSection() {
             <label className="field field--full">
               <span>Message</span>
               <textarea
+                name="message"
                 rows={6}
+                required
+                minLength={10}
+                maxLength={4000}
                 value={form.message}
                 onChange={updateField("message")}
                 onFocus={() => setFocusedField("message")}
@@ -732,12 +853,14 @@ function ContactSection() {
             </label>
           </div>
           <div className="contact-card__footer">
-            <button type="button" className="button button--primary">
-              Send inquiry
+            <button type="submit" className="button button--primary" disabled={isSubmitting}>
+              {isSubmitting ? "Sending..." : "Send inquiry"}
             </button>
-            <p>Next step: connect this form to your inbox or API route before launch.</p>
+            <p className={status.type !== "idle" ? `form-status form-status--${status.type}` : ""} role="status">
+              {status.message || "This form sends directly to jake@sovereign-nexus.com."}
+            </p>
           </div>
-        </div>
+        </form>
       </FadeIn>
     </section>
   );
@@ -746,7 +869,8 @@ function ContactSection() {
 function Footer() {
   return (
     <footer className="shell footer">
-      <span>(c) {new Date().getFullYear()} Sovereign Nexus LLC</span>
+      <span>&copy; {new Date().getFullYear()} Sovereign Nexus LLC</span>
+      <span>Built for accountable systems</span>
     </footer>
   );
 }
@@ -757,11 +881,12 @@ export default function App() {
       <Nav />
       <main>
         <Hero />
-        <AssemblingBanner />
         <WhatWeBuild />
         <Duality />
+        <AssemblingBanner />
         <Commitment />
         <Signals />
+        <FitSection />
         <ContactSection />
       </main>
       <Footer />

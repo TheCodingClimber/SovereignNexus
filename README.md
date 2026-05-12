@@ -1,16 +1,42 @@
-# React + Vite
+# Sovereign Nexus
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+React/Vite landing page for Sovereign Nexus LLC.
 
-Currently, two official plugins are available:
+## Scripts
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+```bash
+npm run dev
+npm run dev:server
+npm run lint
+npm run build
+npm start
+```
 
-## React Compiler
+## Contact Form
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+This project includes its own Node/Express backend. In production, run:
 
-## Expanding the ESLint configuration
+```bash
+npm run build
+npm start
+```
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+The server serves the built site from `dist/` and handles `POST /api/contact`.
+
+The contact form sends mail through Resend to:
+
+```text
+jake@sovereign-nexus.com
+```
+
+Set these environment variables in the deployment host:
+
+```text
+PORT=3001
+RESEND_API_KEY=re_your_api_key_here
+RESEND_FROM=Sovereign Nexus <noreply@sovereign-nexus.com>
+```
+
+`RESEND_FROM` must use a sender/domain verified in Resend.
+
+For local development, run `npm run dev:server` in one terminal and `npm run dev` in another. Vite proxies `/api` requests to `http://127.0.0.1:3001`.
