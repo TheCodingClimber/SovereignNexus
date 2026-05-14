@@ -96,11 +96,18 @@ const CONTACT_NOTES = [
   "Best fit for teams that need software and controls to work as one system.",
 ];
 
+const prefersReducedMotion = () =>
+  typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
 function TypingText({ text, speed = 28, delay = 800 }) {
-  const [displayed, setDisplayed] = useState("");
-  const [cursorVisible, setCursorVisible] = useState(true);
+  const [displayed, setDisplayed] = useState(() => (prefersReducedMotion() ? text : ""));
+  const [cursorVisible, setCursorVisible] = useState(() => !prefersReducedMotion());
 
   useEffect(() => {
+    if (prefersReducedMotion()) {
+      return undefined;
+    }
+
     let index = 0;
     let typeTimeoutId;
     let startTimeoutId;
@@ -136,11 +143,15 @@ function TypingText({ text, speed = 28, delay = 800 }) {
 
 function FadeIn({ children, delay = 0, className = "" }) {
   const ref = useRef(null);
-  const [visible, setVisible] = useState(false);
+  const [visible, setVisible] = useState(() => typeof window !== "undefined" && !("IntersectionObserver" in window));
 
   useEffect(() => {
     const element = ref.current;
     if (!element) {
+      return undefined;
+    }
+
+    if (visible || !("IntersectionObserver" in window)) {
       return undefined;
     }
 
@@ -156,7 +167,7 @@ function FadeIn({ children, delay = 0, className = "" }) {
 
     observer.observe(element);
     return () => observer.disconnect();
-  }, []);
+  }, [visible]);
 
   return (
     <div
@@ -251,6 +262,7 @@ function Hero() {
               loop
               playsInline
               preload="metadata"
+              poster="/og-image.png"
             />
           </div>
           <div className="hero__signal-row">
@@ -598,7 +610,7 @@ function AssemblingBanner() {
   }, [bannerHeight]);
 
   return (
-    <section ref={containerRef} className="assembly-banner">
+    <section ref={containerRef} className="assembly-banner" aria-hidden="true">
       <div ref={overlayRef} className="assembly-banner__glow" />
       <div ref={mountRef} className="assembly-banner__canvas" style={{ height: `${bannerHeight}px` }} />
       <div className="assembly-banner__copy" aria-hidden="true">
@@ -627,7 +639,11 @@ function WhatWeBuild() {
   return (
     <section id="build" className="shell section">
       <FadeIn>
-        <SectionHeader eyebrow="What We Build" />
+        <SectionHeader
+          eyebrow="What We Build"
+          title="Applications, platforms, and integrations with control built in."
+          body="We build production software for teams that need the interface, data model, release path, and operating controls to move together."
+        />
       </FadeIn>
       <div className="feature-grid">
         {CAPABILITIES.map((item, index) => (
@@ -675,7 +691,10 @@ function Commitment() {
   return (
     <section className="shell section section--bordered">
       <FadeIn>
-        <SectionHeader eyebrow="Our Commitment" />
+        <SectionHeader
+          eyebrow="Our Commitment"
+          title="One team accountable from design to production."
+        />
         <div className="commitment-list">
           {COMMITMENT_LINES.map((line, index) => (
             <div key={line} className="commitment-list__item">
@@ -696,7 +715,7 @@ function Signals() {
         <SectionHeader
           eyebrow="Why It Holds"
           title="Built for high-accountability environments."
-          body="A sharper landing page does more than look polished. It tells visitors what kind of operational pressure your software is expected to withstand."
+          body="The systems we build are shaped for teams that need clear ownership, reliable change history, and confidence under operational pressure."
         />
       </FadeIn>
       <div className="signals-grid">
@@ -797,7 +816,12 @@ function ContactSection() {
           </div>
         </div>
 
-        <form className="surface-card contact-card" onSubmit={handleSubmit}>
+        <form
+          className="surface-card contact-card"
+          onSubmit={handleSubmit}
+          aria-busy={isSubmitting}
+          aria-describedby="contact-form-status"
+        >
           <label className="field field--honeypot" aria-hidden="true">
             <span>Company</span>
             <input name="company" tabIndex="-1" value={form.company} onChange={updateField("company")} />
@@ -856,7 +880,12 @@ function ContactSection() {
             <button type="submit" className="button button--primary" disabled={isSubmitting}>
               {isSubmitting ? "Sending..." : "Send inquiry"}
             </button>
-            <p className={status.type !== "idle" ? `form-status form-status--${status.type}` : ""} role="status">
+            <p
+              id="contact-form-status"
+              className={status.type !== "idle" ? `form-status form-status--${status.type}` : ""}
+              role="status"
+              aria-live="polite"
+            >
               {status.message || "This form sends directly to jake@sovereign-nexus.com."}
             </p>
           </div>
@@ -878,8 +907,11 @@ function Footer() {
 export default function App() {
   return (
     <div className="page-shell">
+      <a className="skip-link" href="#main">
+        Skip to content
+      </a>
       <Nav />
-      <main>
+      <main id="main">
         <Hero />
         <WhatWeBuild />
         <Duality />
