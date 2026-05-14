@@ -1,0 +1,23 @@
+{
+  "name": "Sovereign Nexus",
+  "short_name": "Sovereign Nexus",
+  "description": "Governed software delivery for custom applications, SaaS platforms, and secure integrations.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#08080a",
+  "theme_color": "#08080a",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    },
+    {
+      "src": "/og-image.png",
+      "sizes": "1200x630",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}

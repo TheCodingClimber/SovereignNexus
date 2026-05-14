@@ -4,6 +4,7 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="canonical" href="https://sovereign-nexus.com/" />
+    <link rel="manifest" href="/site.webmanifest" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -12,13 +13,18 @@
     />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="theme-color" content="#08080a" />
-    <meta name="robots" content="index, follow" />
+    <meta name="color-scheme" content="dark" />
+    <meta name="robots" content="index, follow, max-image-preview:large" />
     <meta name="author" content="Sovereign Nexus LLC" />
+    <meta name="application-name" content="Sovereign Nexus" />
+    <meta name="apple-mobile-web-app-title" content="Sovereign Nexus" />
+    <meta name="format-detection" content="telephone=no" />
     <meta
       name="description"
       content="Sovereign Nexus builds custom software, SaaS platforms, integrations, and governed applications with audit trails, state integrity, and traceable delivery."
     />
     <meta property="og:type" content="website" />
+    <meta property="og:locale" content="en_US" />
     <meta property="og:site_name" content="Sovereign Nexus" />
     <meta property="og:url" content="https://sovereign-nexus.com/" />
     <meta property="og:title" content="Sovereign Nexus | Governed Software Delivery" />
@@ -28,6 +34,9 @@
     />
     <meta property="og:image" content="https://sovereign-nexus.com/og-image.png" />
     <meta property="og:image:alt" content="Sovereign Nexus governed software delivery" />
+    <meta property="og:image:type" content="image/png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="Sovereign Nexus | Governed Software Delivery" />
     <meta
@@ -35,9 +44,55 @@
       content="Custom software, SaaS platforms, and integrations built with governance, audit trails, and operational integrity from day one."
     />
     <meta name="twitter:image" content="https://sovereign-nexus.com/og-image.png" />
+    <meta name="twitter:image:alt" content="Sovereign Nexus governed software delivery" />
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@graph": [
+          {
+            "@type": "Organization",
+            "@id": "https://sovereign-nexus.com/#organization",
+            "name": "Sovereign Nexus LLC",
+            "url": "https://sovereign-nexus.com/",
+            "logo": "https://sovereign-nexus.com/favicon.svg",
+            "email": "jake@sovereign-nexus.com",
+            "contactPoint": [
+              {
+                "@type": "ContactPoint",
+                "email": "jake@sovereign-nexus.com",
+                "contactType": "sales",
+                "areaServed": "US",
+                "availableLanguage": "en"
+              }
+            ]
+          },
+          {
+            "@type": "WebSite",
+            "@id": "https://sovereign-nexus.com/#website",
+            "url": "https://sovereign-nexus.com/",
+            "name": "Sovereign Nexus",
+            "publisher": {
+              "@id": "https://sovereign-nexus.com/#organization"
+            },
+            "inLanguage": "en-US"
+          },
+          {
+            "@type": "Service",
+            "@id": "https://sovereign-nexus.com/#service",
+            "name": "Governed Software Delivery",
+            "provider": {
+              "@id": "https://sovereign-nexus.com/#organization"
+            },
+            "serviceType": "Custom software development",
+            "areaServed": "US",
+            "description": "Custom applications, SaaS platforms, and integrations built for governed environments with audit trails, state integrity, and traceable delivery."
+          }
+        ]
+      }
+    </script>
     <title>Sovereign Nexus | Governed Software Delivery</title>
-    <script type="module" crossorigin src="/assets/index-BiyLbvd3.js"></script>
-    <link rel="stylesheet" crossorigin href="/assets/index-BR9ESDaL.css">
+    <script type="module" crossorigin src="/assets/index-DQMX-SyC.js"></script>
+    <link rel="stylesheet" crossorigin href="/assets/index-B6TZm2rd.css">
   </head>
   <body>
     <div id="root"></div>

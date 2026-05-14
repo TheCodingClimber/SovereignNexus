@@ -8,8 +8,14 @@ const MAX_LENGTHS = {
 };
 const RATE_LIMIT_WINDOW_MS = 15 * 60 * 1000;
 const RATE_LIMIT_MAX = 5;
+const RATE_LIMIT_MAX_KEYS = 5000;
 const attempts = new Map();
+const PRODUCTION_ORIGINS = new Set(["https://sovereign-nexus.com", "https://www.sovereign-nexus.com"]);
+const LOCAL_ORIGIN_PATTERN = /^https?:\/\/(?:localhost|127\.0\.0\.1)(?::\d+)?$/i;
 const apiSecurityHeaders = {
+  "Cache-Control": "no-store",
+  "Content-Security-Policy": "default-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'",
+  "Cross-Origin-Resource-Policy": "same-origin",
   "Referrer-Policy": "strict-origin-when-cross-origin",
   "X-Content-Type-Options": "nosniff",
   "X-Frame-Options": "DENY",
@@ -41,10 +47,21 @@ const getHeader = (request, name) => {
   return Array.isArray(value) ? value[0] : value;
 };
 
-const getClientKey = (request) => {
-  const forwardedFor = getHeader(request, "x-forwarded-for");
-  const forwardedIp = forwardedFor?.split(",")[0]?.trim();
-  return forwardedIp || request.ip || request.socket?.remoteAddress || "unknown";
+const getClientKey = (request) => request.ip || request.socket?.remoteAddress || "unknown";
+
+const isAllowedOrigin = (request) => {
+  const origin = getHeader(request, "origin");
+
+  if (!origin) {
+    return true;
+  }
+
+  try {
+    const normalizedOrigin = new URL(origin).origin.toLowerCase();
+    return PRODUCTION_ORIGINS.has(normalizedOrigin) || LOCAL_ORIGIN_PATTERN.test(normalizedOrigin);
+  } catch {
+    return false;
+  }
 };
 
 const isRateLimited = (request) => {
@@ -54,6 +71,13 @@ const isRateLimited = (request) => {
   for (const [attemptKey, record] of attempts) {
     if (now - record.startedAt > RATE_LIMIT_WINDOW_MS) {
       attempts.delete(attemptKey);
+    }
+  }
+
+  if (attempts.size > RATE_LIMIT_MAX_KEYS) {
+    const oldestKey = attempts.keys().next().value;
+    if (oldestKey) {
+      attempts.delete(oldestKey);
     }
   }
 
@@ -72,6 +96,10 @@ export default async function handler(request, response) {
   if (request.method !== "POST") {
     response.setHeader("Allow", "POST");
     return response.status(405).json({ error: "Method not allowed" });
+  }
+
+  if (!isAllowedOrigin(request)) {
+    return response.status(403).json({ error: "Origin not allowed." });
   }
 
   const contentType = getHeader(request, "content-type") || "";
